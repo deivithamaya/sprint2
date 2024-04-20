@@ -68,7 +68,6 @@ def get_feature_target(
             Test target
     """
     X_train, y_train, X_test, y_test = None, None, None, None
-
     # TODO
     # Assign to X_train all the columns from app_train except "TARGET"
     # Assign to y_train the "TARGET" column
