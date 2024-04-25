@@ -98,6 +98,7 @@ def preprocess_data(
 
 
     print(dataframes[0].shape)
+    print(f'columns are = {dataframe[0].columns})
 
     # 3. TODO Impute values for all columns with missing data or, just all the columns.
     # Use median as imputing value. Please use sklearn.impute.SimpleImputer().
