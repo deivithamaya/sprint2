@@ -5,6 +5,10 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
 
+def encoder_categories(x):
+    onehot_encoder = OneHotEncoder(sparse=False)
+    x = x.reshape(len(x),1)
+    
 
 def preprocess_data(
     train_df: pd.DataFrame, val_df: pd.DataFrame, test_df: pd.DataFrame
@@ -55,7 +59,7 @@ def preprocess_data(
     #     working_train_df DataFrame to fit the OrdinalEncoder and
     #     OneHotEncoder classes, then use the fitted models to transform all the
     #     datasets.
-    for df in dataframes: 
+    for idx, df in enumerate(dataframes): 
         binariesColumns = df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
         columnsNames = binariesColumns.columns
         binariesColumns = OrdinalEncoder().fit_transform(binariesColumns)  
@@ -63,11 +67,37 @@ def preprocess_data(
         
         categoricalColumns = df.select_dtypes('object').iloc[:, df.select_dtypes('object').columns.map(lambda x : x not in columnsNames)]
         categoricalColumnsNames = categoricalColumns.columns
+        
+        for nameColumn in categoricalColumns:
+            print(f'namecolumn is {nameColumn}')
+            one = OneHotEncoder(sparse_output=False)
+            column = df[nameColumn]
+            nameForList = [str(names) for names in list(column.unique())]
+            print(f'nameFor{nameForList}')
+            if 'nan' in nameForList:
+                nameForList.remove('nan')
+                nameForList.sort()
+                #nameForList.append('nan')
+                column = column.to_numpy().reshape(len(column),1)
+                column_encoded = pd.DataFrame(one.fit_transform(column)[:,:-1], columns=nameForList)
+            else:
+                nameForList.sort()
+                column = column.to_numpy().reshape(len(column),1)
+                column_encoded = pd.DataFrame(one.fit_transform(column), columns=nameForList)
+                
+            df.drop(nameColumn, axis=1)
+            df = pd.concat([df, column_encoded], axis=1)
+        dataframes[idx] = df
+        print(df.head())
+        print(df.shape)
+        break
+            
+
         del(binariesColumns)
         del(columnsNames)
 
 
-        
+    print(dataframes[0].shape)
 
     # 3. TODO Impute values for all columns with missing data or, just all the columns.
     # Use median as imputing value. Please use sklearn.impute.SimpleImputer().
@@ -89,4 +119,4 @@ def preprocess_data(
     #     model to transform all the datasets.
 
 
-    return None
+    return dataframes
