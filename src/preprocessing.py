@@ -55,15 +55,19 @@ def preprocess_data(
     #     working_train_df DataFrame to fit the OrdinalEncoder and
     #     OneHotEncoder classes, then use the fitted models to transform all the
     #     datasets.
-    for df in dataframes:
-        #for binaryColumn in df.select_dtypes("object")[df.select_dtypes("object").nunique()<= 2]
+    for df in dataframes: 
         binariesColumns = df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
-        binariesColumns = OrdinalEncoder().fit_transform(binariesColumns)
-        print( df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')])
-        print("binari")
-        df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]= binariesColumns
-        print(df.head())
-        break
+        columnsNames = binariesColumns.columns
+        binariesColumns = OrdinalEncoder().fit_transform(binariesColumns)  
+        df[columnsNames] = binariesColumns
+        
+        categoricalColumns = df.select_dtypes('object').iloc[:, df.select_dtypes('object').columns.map(lambda x : x not in columnsNames)]
+        categoricalColumnsNames = categoricalColumns.columns
+        del(binariesColumns)
+        del(columnsNames)
+
+
+        
 
     # 3. TODO Impute values for all columns with missing data or, just all the columns.
     # Use median as imputing value. Please use sklearn.impute.SimpleImputer().
