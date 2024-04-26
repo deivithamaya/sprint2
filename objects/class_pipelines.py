@@ -33,4 +33,10 @@ class newClass(BaseEstimator, TransformerMixin):
     def transform(self) -> list[binariesColumns:pd.DataFrame, categoricalColumns:pd.DataFrame]:
         return [self.df[self.binariesNames], self.df[self.categoricalNames]
 
+"""
+   object for transfor 
+"""
+
+class Encoder(BaseEstimator, TransformerMixin):
+    
 
