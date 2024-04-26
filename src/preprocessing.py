@@ -5,10 +5,8 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
 
-def encoder_categories(x):
-    onehot_encoder = OneHotEncoder(sparse=False)
-    x = x.reshape(len(x),1)
-    
+def get_split_of_categoricalColumns(df:pd.DataFrame): -> List[pd.DataFrame, List,  ]
+
 
 def preprocess_data(
     train_df: pd.DataFrame, val_df: pd.DataFrame, test_df: pd.DataFrame
@@ -43,7 +41,7 @@ def preprocess_data(
     working_train_df["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace=True)
     working_val_df["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace=True)
     working_test_df["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace=True)
-    dataframes = [working_train_df, working_val_df, working_test_df]
+    df = {'train':working_train_df, 'val':working_val_df, 'test':working_test_df}
 
     # 2. TODO Encode string categorical features (dytpe `object`):
     #     - If the feature has 2 categories encode using binary encoding,
@@ -59,10 +57,11 @@ def preprocess_data(
     #     working_train_df DataFrame to fit the OrdinalEncoder and
     #     OneHotEncoder classes, then use the fitted models to transform all the
     #     datasets.
-
-    for idx, df in enumerate(dataframes): 
+    #map(lambda x: x.replace(['XNA'], np.nan, inplace=True), dataframes)
+    for "idx, df" key in list(df.keys()): 
+        #df.replace(["XNA"], np.nan, inplace=True)
         activate = False
-        index = df.index
+        index = df[key].index
         binariesColumns = df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
         columnsNames = binariesColumns.columns
         binariesColumns = OrdinalEncoder().fit_transform(binariesColumns)  
@@ -74,6 +73,7 @@ def preprocess_data(
             one = OneHotEncoder(sparse_output=False)
             column = df[nameColumn]
             nameForList = [str(names) for names in list(column.unique())]
+            print(nameForList)
             if 'nan' in nameForList:
                 nameForList.remove('nan')
                 nameForList.sort()
@@ -87,6 +87,7 @@ def preprocess_data(
             df.drop(nameColumn, axis=1, inplace=True)
             df = pd.concat([df, column_encoded], axis=1)
         dataframes[idx] = df
+        print(df.columns)
         print(df.shape)        
     del(binariesColumns)
     del(columnsNames)
