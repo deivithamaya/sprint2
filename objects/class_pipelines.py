@@ -1,6 +1,7 @@
 import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from numpy import logical_and
+from typing import List
 
 """
     Create your own function to obtain the data
@@ -24,11 +25,11 @@ class newClass(BaseEstimator, TransformerMixin):
         
     def fit(self, df:pd.DataFrame) -> None:
         if self.state:
+            self.state = not(self.state)
             self.df = df
             binariesColumnsDf, categoricalColumnsDf = get_split_of_categoricalColumns(self.df)
             self.binariesNames = binariesColumnsDf.columns
             self.categoricalNames = categoricalColumnsDf.columns
-
 
     def transform(self) -> list[binariesColumns:pd.DataFrame, categoricalColumns:pd.DataFrame]:
         return [self.df[self.binariesNames], self.df[self.categoricalNames]
@@ -38,5 +39,6 @@ class newClass(BaseEstimator, TransformerMixin):
 """
 
 class Encoder(BaseEstimator, TransformerMixin):
-    
+    def __init__(self):
+        print(self)
 
