@@ -5,7 +5,7 @@ import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
 
-def get_split_of_categoricalColumns(df:pd.DataFrame): -> List[pd.DataFrame, List,  ]
+def get_split_of_categoricalColumns(df:pd.DataFrame) -> List[pd.DataFrame, List,  ]:
 
 
 def preprocess_data(
