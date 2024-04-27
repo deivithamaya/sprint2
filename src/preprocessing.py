@@ -4,6 +4,7 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
+from objects/class_pipelines import newClass
 
 def get_split_of_categoricalColumns(df:pd.DataFrame) -> List[pd.DataFrame, List,  ]:
 
@@ -62,6 +63,10 @@ def preprocess_data(
         #df.replace(["XNA"], np.nan, inplace=True)
         activate = False
         index = df[key].index
+        new = newClass()
+        new.fit(df[key])
+
+        """
         binariesColumns = df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
         columnsNames = binariesColumns.columns
         binariesColumns = OrdinalEncoder().fit_transform(binariesColumns)  
@@ -94,7 +99,7 @@ def preprocess_data(
     del(categoricalColumns)
     del(column)
     del(column_encoded)
-
+"""
     # 3. TODO Impute values for all columns with missing data or, just all the columns.
     # Use median as imputing value. Please use sklearn.impute.SimpleImputer().
     # Again, take into account that:
