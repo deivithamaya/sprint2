@@ -4,9 +4,10 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
-from objects/class_pipelines import newClass
+from objects.class_pipelines import newClass, Encoder
+from sklearn.pipeline import Pipeline
 
-def get_split_of_categoricalColumns(df:pd.DataFrame) -> List[pd.DataFrame, List,  ]:
+##def get_split_of_categoricalColumns(df:pd.DataFrame) -> List[pd.DataFrame, List,  ]:
 
 
 def preprocess_data(
@@ -59,12 +60,19 @@ def preprocess_data(
     #     OneHotEncoder classes, then use the fitted models to transform all the
     #     datasets.
     #map(lambda x: x.replace(['XNA'], np.nan, inplace=True), dataframes)
-    for "idx, df" key in list(df.keys()): 
+    for key in list(df.keys()): 
         #df.replace(["XNA"], np.nan, inplace=True)
         activate = False
         index = df[key].index
-        new = newClass()
-        new.fit(df[key])
+        #new = newClass('train')
+        #new.fit(df[key])
+        #t, t2  = new.transform(df[key])
+        #print(f'transform = {t}')
+        #pile = Pipeline([('names', newClass('train')),('otra', Encoder())])
+        pile = Pipeline([('names', newClass())])
+        pile.fit(df[key])
+        pile.transform(df[key])
+        
 
         """
         binariesColumns = df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
@@ -119,5 +127,5 @@ def preprocess_data(
     #     working_train_df DataFrame to fit the MinMaxScaler and then use the fitted
     #     model to transform all the datasets.
 
-
-    return dataframes
+    df = list(df.values())
+    return df
