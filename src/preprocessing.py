@@ -64,15 +64,21 @@ def preprocess_data(
         #df.replace(["XNA"], np.nan, inplace=True)
         activate = False
         index = df[key].index
+        #print(type(newClass().fit_transform(df[key])))
         #new = newClass('train')
         #new.fit(df[key])
-        #t, t2  = new.transform(df[key])
+        #t = new.transform(df[key])
+        #print(type(t))
         #print(f'transform = {t}')
-        #pile = Pipeline([('names', newClass('train')),('otra', Encoder())])
-        pile = Pipeline([('names', newClass())])
+        pile = Pipeline([('names', newClass()),('otra', Encoder())])
         pile.fit(df[key])
+        print('transform')
         pile.transform(df[key])
-        
+        #pile = Pipeline([('names', newClass())])
+        #pile.fit(df[key])
+        #y = pile.transform(df[key])
+        #print(y)
+        break
 
         """
         binariesColumns = df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
