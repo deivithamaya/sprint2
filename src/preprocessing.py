@@ -111,7 +111,7 @@ def preprocess_data(
     del(binariesColumns)
     del(columnsNames)
     del(categoricalColumns)
-    del(column)
+    adel(column)
     del(column_encoded)
 """
     # 3. TODO Impute values for all columns with missing data or, just all the columns.

@@ -2,6 +2,7 @@ import pandas as pd
 from sklearn.base import BaseEstimator, TransformerMixin
 from numpy import logical_and
 from typing import List
+from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 
 """
     Create your own function to obtain the data
@@ -57,12 +58,18 @@ class newClass(BaseEstimator, TransformerMixin):
 """
 #TransformerMixin
 class Encoder(BaseEstimator, TransformerMixin):
+    def binariEncoder(self, binariesColumns):
+        pass
+
+
     def __init__(self):
         print("entre al init de encoder")
         print(self)
     
     def fit(self, X, y=None):
         print('entre al encoder fit')
+        print(type(X))
+        print(X)
 
     def transform(self, X, y=None):
         print('entre al encoder transform')
