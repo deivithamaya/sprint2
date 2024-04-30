@@ -29,6 +29,25 @@ class newClass(BaseEstimator, TransformerMixin):
     
         return [binariesColumns, categoricalColumns]
 
+    def get_list_of_names_for_DataFrame(self, df:pd.DataFrame, namesOfColumns)-> List[str]:
+        print(namesOfColumns)
+        listOfNames = []
+        for name in namesOfColumns:
+            uniques = df[name].unique()
+            uniques = [str(x) for x in uniques]
+            #if ''==name : uniques.append('XNA')
+            if 'nan' in uniques:
+                print(f'this columns has nan values {name}')
+                uniques.remove('nan')
+                uniques.sort()
+                uniques.append('nan'+str(name))
+            else:
+                uniques.sort()
+            listOfNames += uniques
+
+        return listOfNames 
+
+
     def __init__(self):
         #self.state = True if state == 'train' else False
         self.state = True
@@ -42,10 +61,28 @@ class newClass(BaseEstimator, TransformerMixin):
             self.binariesNames = binariesColumnsDf.columns
             self.categoricalNames = categoricalColumnsDf.columns
             print('sali')
+            se = pd.Series(['XNA' for x in range(len(self.binariesNames))], index=self.binariesNames)
+            X[self.binariesNames] = X[self.binariesNames].append(se, ignore_index=True)
+            print('bin')
+            print(X[self.binariesNames].head())
+            print('cate')
+            print(X[self.categoricalNames].head())
+            # get the parameters of OrdinalEncoder and OneHotEncoder
+            self.ordinalEncoder = OrdinalEncoder().fit(X[self.binariesNames])
+            self.listOfNamesDataFrame = self.get_list_of_names_for_DataFrame(X, self.categoricalNames)
+            #print(self.listOfNamesDataFrame)
+            self.oneHotEncoder = OneHotEncoder(sparse_output=False).fit(X[self.categoricalNames])
 
-    def transform(self, df:pd.DataFrame, y=None) -> list[pd.DataFrame, pd.DataFrame]:
-        print('entre al transform de new class')
-        return [df[self.binariesNames], df[self.categoricalNames]]
+
+
+    def transform(self, df:pd.DataFrame, y=None) -> pd.DataFrame:
+        #df.drop(self.categoricalNames, inplace=True)
+        index = df.index
+        df[self.binariesNames] = self.ordinalEncoder.transform(df[self.binariesNames])
+        df = pd.concat([df, pd.DataFrame(self.oneHotEncoder.transform(df[self.categoricalNames]), columns=self.listOfNamesDataFrame, index=index)], axis=1)
+        df.drop(self.categoricalNames, axis=1, inplace=True)
+        return df
+        #return [df[self.binariesNames], df[self.categoricalNames]]
 
     def fit_transform(self, X, y=None):
         print('i entered the ft method')
@@ -61,13 +98,13 @@ class Encoder(BaseEstimator, TransformerMixin):
     def binariEncoder(self, binariesColumns):
         pass
 
-
-    def __init__(self):
+    def __init__(self, df:pd.DataFrame):
         print("entre al init de encoder")
+        self.df = df
         print(self)
     
-    def fit(self, X, y=None):
-        print('entre al encoder fit')
+    def fit(self, X:List[pd.DataFrame],y=None):
+        print('entre al encoder fit') 
         print(type(X))
         print(X)
 

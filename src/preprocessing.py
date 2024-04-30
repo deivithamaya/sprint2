@@ -44,7 +44,7 @@ def preprocess_data(
     working_val_df["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace=True)
     working_test_df["DAYS_EMPLOYED"].replace({365243: np.nan}, inplace=True)
     df = {'train':working_train_df, 'val':working_val_df, 'test':working_test_df}
-
+    #dataframe = [working_train_df, working_val_df, working_test_df]
     # 2. TODO Encode string categorical features (dytpe `object`):
     #     - If the feature has 2 categories encode using binary encoding,
     #       please use `sklearn.preprocessing.OrdinalEncoder()`. Only 4 columns
@@ -60,6 +60,7 @@ def preprocess_data(
     #     OneHotEncoder classes, then use the fitted models to transform all the
     #     datasets.
     #map(lambda x: x.replace(['XNA'], np.nan, inplace=True), dataframes)
+    
     for key in list(df.keys()): 
         #df.replace(["XNA"], np.nan, inplace=True)
         activate = False
@@ -70,48 +71,68 @@ def preprocess_data(
         #t = new.transform(df[key])
         #print(type(t))
         #print(f'transform = {t}')
-        pile = Pipeline([('names', newClass()),('otra', Encoder())])
-        pile.fit(df[key])
+        if 'train' == key :
+            pile = Pipeline([('names', newClass())])
+            pile.fit(df[key])
+       
         print('transform')
-        pile.transform(df[key])
+        t = pile.transform(df[key])
+        print(f't ={t}')
+        print(f'shape = {t.shape}')
         #pile = Pipeline([('names', newClass())])
         #pile.fit(df[key])
         #y = pile.transform(df[key])
         #print(y)
-        break
-
-        """
+        df[key] = t
+        
+    """
+    for idx,df in enumerate(dataframe):
+        index = df.index
         binariesColumns = df.select_dtypes('object').iloc[:,np.logical_and(df.select_dtypes('object').nunique().to_numpy() <= 2, df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
+
+        binariesColumns = df.select_dtypes('object').iloc[:, np.logical_and(df.select_dtypes('object').columns.map(lambda x: df[x][df[x] != 'XNA'].nunique() <= 2) , df.select_dtypes('object').columns != 'NAME_CONTRACT_TYPE')]
+
+
         columnsNames = binariesColumns.columns
+        print(f'length of bin {len(columnsNames)}')
+        print(columnsNames)
         binariesColumns = OrdinalEncoder().fit_transform(binariesColumns)  
         df[columnsNames] = binariesColumns
         categoricalColumns = df.select_dtypes('object').iloc[:, df.select_dtypes('object').columns.map(lambda x : x not in columnsNames)]
         categoricalColumnsNames = categoricalColumns.columns
         
+        print(f'length of bin {len(categoricalColumnsNames)}')
+        print(categoricalColumnsNames)
+        largo = 0
         for nameColumn in categoricalColumns: 
             one = OneHotEncoder(sparse_output=False)
             column = df[nameColumn]
             nameForList = [str(names) for names in list(column.unique())]
             print(nameForList)
+            largo += len(nameForList)
             if 'nan' in nameForList:
+                print('woth nan')
                 nameForList.remove('nan')
                 nameForList.sort()
+                nameForList.append('nan')
                 column = column.to_numpy().reshape(len(column),1)
-                column_encoded = pd.DataFrame(one.fit_transform(column)[:,:-1], columns=nameForList, index=index)
+                column_encoded = pd.DataFrame(one.fit_transform(column), columns=nameForList, index=index)
             else:
+                print('without nan')
                 nameForList.sort()
                 column = column.to_numpy().reshape(len(column),1)
                 column_encoded = pd.DataFrame(one.fit_transform(column), columns=nameForList, index=index)
                 
             df.drop(nameColumn, axis=1, inplace=True)
             df = pd.concat([df, column_encoded], axis=1)
-        dataframes[idx] = df
+        dataframe[idx] = df
         print(df.columns)
-        print(df.shape)        
+        print(df.shape)
+        print(f'largo = {largo}')
     del(binariesColumns)
     del(columnsNames)
     del(categoricalColumns)
-    adel(column)
+    del(column)
     del(column_encoded)
 """
     # 3. TODO Impute values for all columns with missing data or, just all the columns.
@@ -133,5 +154,5 @@ def preprocess_data(
     #     working_train_df DataFrame to fit the MinMaxScaler and then use the fitted
     #     model to transform all the datasets.
 
-    df = list(df.values())
+    #df = list(df.values())
     return df
