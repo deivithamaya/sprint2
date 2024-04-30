@@ -6,9 +6,21 @@ from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
 from objects.class_pipelines import newClass, Encoder
 from sklearn.pipeline import Pipeline
-
+import os
+from pathlib import Path
 ##def get_split_of_categoricalColumns(df:pd.DataFrame) -> List[pd.DataFrame, List,  ]:
-
+def get_pipelines() -> Pipeline:
+    path = Path(__file__)
+    father = path.parent.parent
+    
+    if 'objects' in os.listdir(str(father)):
+        print('hay una carpeta')
+        if "pipeline.pkl" in os.listdir(str(father)+'/objects/'):
+            print('hay un objeto')
+            
+    
+ #   if os.listdir
+    return None
 
 def preprocess_data(
     train_df: pd.DataFrame, val_df: pd.DataFrame, test_df: pd.DataFrame

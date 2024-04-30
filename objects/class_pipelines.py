@@ -5,8 +5,7 @@ from typing import List
 from sklearn.preprocessing import OrdinalEncoder, OneHotEncoder
 
 """
-    Create your own function to obtain the data
-    transform it
+    function to obtain the data transform it
 """
 def get_split_of_categoricalColumns(df: pd.DataFrame) -> List[pd.DataFrame]:
 
