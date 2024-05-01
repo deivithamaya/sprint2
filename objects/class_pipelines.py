@@ -64,7 +64,7 @@ class newClass(BaseEstimator, TransformerMixin):
 
         return self
 
-    def transform(self, df:pd.DataFrame, y=None) -> pd.DataFrame:
+    def transform(self, df:pd.DataFrame) -> pd.DataFrame:
         print('transform in encoder')
         print(df.shape)
         print(df.head())
