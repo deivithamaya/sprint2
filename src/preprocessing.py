@@ -92,20 +92,35 @@ def preprocess_data(
         #print(type(t))
         #print(f'transform = {t}')
         if 'train' == key :
-            pile = Pipeline([('names', newClass()),('imputer', Imputer())])
-            #pile = Pipeline([('names', newClass())])
+            #pile = Pipeline([('names', newClass()),('imputer', Imputer())])
+            index = df[key].index
+            pile = Pipeline([('names', newClass())])
             pile.fit(df[key])
-       
-        print('transform')
-        t = pile.transform(df[key])
-        print(f't ={t}')
+            t = pile.transform(df[key])
+            """
+            columns = t.columns
+            simple = SimpleImputer().fit(t.values)
+            t = pd.DataFrame(simple.transform(t), columns=columns, index=index)
+            """
+
+            simpleImputer = Imputer().fit(t)
+            t = simpleImputer.transform(t)
+
+            columns = t.columns
+            index = t.index
+            minMax = MinMaxScaler().fit(t.values)
+            t = pd.DataFrame(minMax.transform(t.values), columns=columns, index=index)
+
+        else :
+            #print('transform')
+            t = pile.transform(df[key])
+            t = simpleImputer.transform(t)
+            columns = t.columns
+            index = t.index
+            t = pd.DataFrame(minMax.transform(t.values), columns=columns, index=index)
+
         print(f'shape = {t.shape}')
-        #pile = Pipeline([('names', newClass())])
-        #pile.fit(df[key])
-        #y = pile.transform(df[key])
-        #print(y)
-        df[key] = t
-        
+        df[key] = t.to_numpy()
     """
     for idx,df in enumerate(dataframe):
         index = df.index

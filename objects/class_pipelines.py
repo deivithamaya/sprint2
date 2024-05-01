@@ -48,15 +48,14 @@ class newClass(BaseEstimator, TransformerMixin):
     def fit(self, X:pd.DataFrame, y=None) -> None:
         if self.state:
             #self.state =not(self.state)a
-            print(f'x before = {X.shape}')
             binariesColumnsDf, categoricalColumnsDf = self.get_split_of_categoricalColumns(X)
             self.binariesNames = binariesColumnsDf.columns
             self.categoricalNames = categoricalColumnsDf.columns
             se = pd.Series(['XNA' for x in range(len(self.binariesNames))], index=self.binariesNames)
             X[self.binariesNames] = X[self.binariesNames].append(se, ignore_index=True)
             X.iloc[random.randrange(0, len(X)), X.columns == 'CODE_GENDER'] = 'XNA'
-            print('x in fit')
-            print(X.shape)
+            #print('x in fit')
+            #print(X.shape)
             # get the parameters of OrdinalEncoder and OneHotEncoder
             self.ordinalEncoder = OrdinalEncoder().fit(X[self.binariesNames])
             self.listOfNamesDataFrame = self.get_list_of_names_for_DataFrame(X, self.categoricalNames)
@@ -65,17 +64,16 @@ class newClass(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, df:pd.DataFrame) -> pd.DataFrame:
-        print('transform in encoder')
-        print(df.shape)
-        print(df.head())
-        print('antes')
+        #print('transform in encoder')
+        #print(df.shape)
+        #print(df.head())
+        #print('antes')
         index = df.index
         df[self.binariesNames] = self.ordinalEncoder.transform(df[self.binariesNames])
         df = pd.concat([df, pd.DataFrame(self.oneHotEncoder.transform(df[self.categoricalNames]), columns=self.listOfNamesDataFrame, index=index)], axis=1)
-        print('after')
-        print(df.head())
+        #print('after')
         df.drop(self.categoricalNames, axis=1, inplace=True)
-        print(df.shape)
+        #print(df.shape)
         return df
 """
     def fit_transform(self, X, y=None):
@@ -97,15 +95,15 @@ class Imputer(BaseEstimator, TransformerMixin):
         pass
 
     def __init__(self):
-        print("entre al init de encoder")
-    
+        pass
+
     def fit(self, df:pd.DataFrame,y=None) -> None:
         self.names = df.columns
         self.simpleImputer = SimpleImputer(strategy='mean')
         self.simpleImputer.fit(df.values)
         return self
 
-    def transform(self, df:pd.DataFrame, y=None) -> pd.DataFrame:
+    def transform(self, df:pd.DataFrame) -> pd.DataFrame:
         df = pd.DataFrame(self.simpleImputer.transform(df.values), columns=self.names)
         return df
 """
