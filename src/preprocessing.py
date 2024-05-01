@@ -4,12 +4,20 @@ import numpy as np
 import pandas as pd
 from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import MinMaxScaler, OneHotEncoder, OrdinalEncoder
-from objects.class_pipelines import newClass, Encoder
+from objects.class_pipelines import newClass, Imputer
 from sklearn.pipeline import Pipeline
 import os
 from pathlib import Path
-##def get_split_of_categoricalColumns(df:pd.DataFrame) -> List[pd.DataFrame, List,  ]:
+import pickle
+
+
 def get_pipelines() -> Pipeline:
+    
+    '''     
+    this function search if exits a pickle object and if this object exits 
+    return a pipeline, else create a pipeline to fit
+    '''
+
     path = Path(__file__)
     father = path.parent.parent
     
@@ -17,10 +25,10 @@ def get_pipelines() -> Pipeline:
         print('hay una carpeta')
         if "pipeline.pkl" in os.listdir(str(father)+'/objects/'):
             print('hay un objeto')
-            
+            with open('pipeline.pkl', 'rb') as f:
+                pipeline = pickle.load(f)
     
- #   if os.listdir
-    return None
+    return pipeline
 
 def preprocess_data(
     train_df: pd.DataFrame, val_df: pd.DataFrame, test_df: pd.DataFrame
@@ -84,7 +92,8 @@ def preprocess_data(
         #print(type(t))
         #print(f'transform = {t}')
         if 'train' == key :
-            pile = Pipeline([('names', newClass())])
+            pile = Pipeline([('names', newClass()),('imputer', Imputer())])
+            #pile = Pipeline([('names', newClass())])
             pile.fit(df[key])
        
         print('transform')
@@ -147,6 +156,7 @@ def preprocess_data(
     del(column)
     del(column_encoded)
 """
+   
     # 3. TODO Impute values for all columns with missing data or, just all the columns.
     # Use median as imputing value. Please use sklearn.impute.SimpleImputer().
     # Again, take into account that:
@@ -155,7 +165,8 @@ def preprocess_data(
     #   - In order to prevent overfitting and avoid Data Leakage you must use only
     #     working_train_df DataFrame to fit the SimpleImputer and then use the fitted
     #     model to transform all the datasets.
-
+    
+    
 
     # 4. TODO Feature scaling with Min-Max scaler. Apply this to all the columns.
     # Please use sklearn.preprocessing.MinMaxScaler().
@@ -166,5 +177,5 @@ def preprocess_data(
     #     working_train_df DataFrame to fit the MinMaxScaler and then use the fitted
     #     model to transform all the datasets.
 
-    #df = list(df.values())
+    df = list(df.values())
     return df
